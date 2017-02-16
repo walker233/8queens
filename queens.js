@@ -54,56 +54,57 @@ var queens = {
     this.board_w = this.c.width;
     this.ctx = this.c.getContext("2d");
   },
-  queenAllowed: function(row,column){
-    for(var q=0;q<this.queenList.length; q++){
-      if ( this.queenList[q].row == row ||
-           this.queenList[q].column == column ||
-           ( this.queenList[q].row - row ==
-             this.queenList[q].column - column
+  queenAllowed: function(row,column,qList){
+
+    for(var q=0;q < qList.length; q++){
+      if ( qList[q].row == row ||
+           ( //Positive slope rise 1, run 1 same number
+             qList[q].row - row ==
+             qList[q].column - column
+           ) ||
+           (
+             qList[q].row - row ==
+             - (qList[q].column - column)
            )
           )
           return false;
     }
     return true;
   },
-  placeQueens: function(){
-    //for(var row_start=1; row_start<=8 ; row_start++){
+  placeQueens: function(queensList, col){
+    //we are placing for the column represented by the input
+    if (col == (8 + 1)) {
+      this.queenList.push(queensList);
+      console.log("Total Solutions so far: " + this.queenList.length );
+      console.log(queensList);
+      return true;
+    } else {
 
-      for(var r=1; r <=8 ; r++){
-        for(var c=1; c<= 8; c++){
-          if ( this.queenAllowed(r,c) ){
-            //Add Queen to list
-            this.queenList.push({row: r, column: c});
-            setTimeout(function(list) { queens.drawBoard(list); }(this.queenList) ,2000);
-            //this.drawBoard();
+      for(var row=1; row <= 8; row++){
+        if (this.queenAllowed(row,col,queensList)){
+          queensList.push( { row: row, column: col} );
+        if ( this.placeQueens(queensList,col+1) ){
+          return true;
+        }
+          queensList.pop();
+        }
 
-          }
       }
     }
-      /*
-      if(this.queenList.length == 8 ){
-        break;
-      } else {
-        this.queenList = [];
-      }
-    }*/
   },
   main: function(board){
     this.init_board(board);
     this.drawBoard(this.queenList);
 
     //while(this.queenList.length < 8){
-      this.placeQueens();
-    //}
+      this.placeQueens([],1);
 
-    //Draw All Queens for fun.
-    /*
-    for(var a=1; a <= 8; a++){
-      for(var b=1; b <= 8; b++){
-        this.drawQueenAt(a,b);
+      for( var i = 0; i < this.queenList.length; i++){
+        console.log("Solution " + i );
+        console.log(this.queenList[i]);
+        this.drawBoard( this.queenList[i] );
       }
-    }
-    */
+
 
   }
 
