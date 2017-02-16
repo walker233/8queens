@@ -6,8 +6,9 @@ var queens = {
   c: null,
   ctx: null,
   qSymbol: String.fromCharCode(parseInt('265B',16)),
-  pieceOffSet: 3,
+  pieceOffSet: 6,
   queenList: [],
+  lastSolution: 0,
   drawBoard: function(qList){
     //Clearn board before we draw it.
     this.ctx.clearRect(0,0,this.board_w,this.board_h);
@@ -32,7 +33,7 @@ var queens = {
     this.drawQueens(qList);
   },
   drawQueenAt: function(row,column){
-    var fontSize = this.board_w/8 - 4;
+    var fontSize = this.board_w/8 ;
     //console.log("fontSize: "+ fontSize);
     this.ctx.font= fontSize+"px Ariel";
     this.ctx.fillText(
@@ -73,24 +74,33 @@ var queens = {
   },
   placeQueens: function(queensList, col){
     //we are placing for the column represented by the input
+    //console.log(queensList);
     if (col == (8 + 1)) {
+      //this.queenList.push(queensList);
+      //this.drawBoard(queensList);
+      //console.log("Total Solutions so far: " + this.queenList.length );
+      //console.log(queensList);
       this.queenList.push(queensList);
-      console.log("Total Solutions so far: " + this.queenList.length );
-      console.log(queensList);
-      return true;
-    } else {
-
+      //return true;
+    }  else {
       for(var row=1; row <= 8; row++){
+        //console.log("Col is: " + col + " on row: "+ row);
         if (this.queenAllowed(row,col,queensList)){
-          queensList.push( { row: row, column: col} );
-        if ( this.placeQueens(queensList,col+1) ){
-          return true;
+          var newList = queensList.slice(0);
+          newList.push({row: row, column: col});
+          //queensList.push( { row: row, column: col} );
+          this.placeQueens(newList,col+1);
         }
-          queensList.pop();
-        }
-
       }
+
     }
+  },
+  drawSolutions: function(){
+    //console.log("Solution " + (1+queens.lastSolution));
+    document.getElementById('queensCaption')
+    .innerHTML= 'Solution '+ (1+queens.lastSolution) + "/"+queens.queenList.length;
+    queens.drawBoard(queens.queenList[queens.lastSolution]);
+    queens.lastSolution++;
   },
   main: function(board){
     this.init_board(board);
@@ -99,15 +109,20 @@ var queens = {
     //while(this.queenList.length < 8){
       this.placeQueens([],1);
 
-      for( var i = 0; i < this.queenList.length; i++){
-        console.log("Solution " + i );
-        console.log(this.queenList[i]);
-        this.drawBoard( this.queenList[i] );
-      }
+      //Animate the Solutions
+      //window.requestAnimationFrame(this.drawSolutions);
+
+      //Call it every few seconds
+      setInterval(this.drawSolutions,5000);
+//      for( var i = 0; i < this.queenList.length; i++){
+      //  console.log("Solution " + i );
+      //  console.log(this.queenList[i]);
+  //      this.drawBoard( this.queenList[i] );
+    //  }
 
 
   }
 
 }
 
-queens.main("chessboard",400,400);
+queens.main("chessboard",800,800);
