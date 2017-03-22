@@ -9,6 +9,7 @@ var queens = {
   pieceOffSet: 6,
   queenList: [],
   lastSolution: 0,
+  colors: ['skyblue','green','violet','blue','orange','rgb(255, 221, 0)','brown','red'],
   drawBoard: function(qList){
     //Clearn board before we draw it.
     this.ctx.clearRect(0,0,this.board_w,this.board_h);
@@ -36,6 +37,8 @@ var queens = {
     var fontSize = this.board_w/8 ;
     //console.log("fontSize: "+ fontSize);
     this.ctx.font= fontSize+"px Ariel";
+    //console.log(this.colors[column]);
+    this.ctx.fillStyle = this.colors[row%8];
     this.ctx.fillText(
       this.qSymbol,
       this.board_w/8*(row-1)+this.pieceOffSet,
@@ -101,6 +104,8 @@ var queens = {
     .innerHTML= 'Solution '+ (1+queens.lastSolution) + "/"+queens.queenList.length;
     queens.drawBoard(queens.queenList[queens.lastSolution]);
     queens.lastSolution++;
+    queens.lastSolution %= (queens.queenList.length);
+
   },
   main: function(board){
     this.init_board(board);
@@ -113,6 +118,7 @@ var queens = {
       //window.requestAnimationFrame(this.drawSolutions);
 
       //Call it every few seconds
+      this.drawSolutions();
       setInterval(this.drawSolutions,5000);
 //      for( var i = 0; i < this.queenList.length; i++){
       //  console.log("Solution " + i );
@@ -125,4 +131,4 @@ var queens = {
 
 }
 
-queens.main("chessboard",800,800);
+queens.main("chessboard",400,400);
